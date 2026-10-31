@@ -78,12 +78,11 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: smw-wii
+          name: SuperMarioWar-Wii
           path: dist/
 
   wiiu:
     runs-on: ubuntu-latest
-    continue-on-error: true # ignore the failure for now - the SDL3 Wii U port is still being written
     container: ghcr.io/extremscorner/libogc2:latest
     steps:
       - uses: actions/checkout@v4
@@ -146,5 +145,49 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: smw-wiiu
+          name: SuperMarioWar-WiiU
           path: dist/
+
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    needs: [wii, wiiu]
+    if: github.ref == 'refs/heads/master'
+    permissions:
+      contents: write   # move the Pre-release tag and publish the release
+
+    steps:
+      - name: Checkout smw-wii repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Only the SuperMarioWar-* artifacts: the smw-*-debug artifacts stay out of the release
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: SuperMarioWar-*
+          path: dist
+
+      # Each zip is meant to be extracted onto the root of the SD card (apps/ and smw/ for Wii, wiiu/ for Wii U)
+      - name: Zip artifacts
+        run: |
+          cd dist/SuperMarioWar-Wii
+          zip -r ../SuperMarioWar-Wii.zip *
+          cd ../SuperMarioWar-WiiU
+          zip -r ../SuperMarioWar-WiiU.zip *
+
+      - name: Update Git Tag
+        run: |
+          git tag -f Pre-release
+          git push -f origin Pre-release
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          prerelease: true
+          allowUpdates: true
+          removeArtifacts: true
+          replacesArtifacts: false
+          tag: Pre-release
+          artifacts: "dist/*.zip"
