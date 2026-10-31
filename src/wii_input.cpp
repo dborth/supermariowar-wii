@@ -62,20 +62,20 @@ Keys keys_for(Layout l)
 {
     switch (l) {
     case Layout::GameCube:
-        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, JOY_STICK_1_DOWN, B(1) /*B*/, B(2) /*X*/, B(7) /*Start*/, B(3) /*Y*/ },
+        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(1) /*B*/, JOY_STICK_1_DOWN, B(0) /*A*/, B(2) /*X*/, B(7) /*Start*/, B(3) /*Y*/ },
                  { JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, B(1) /*B*/, B(2) /*X*/, B(3) /*Y*/ } };
     case Layout::Classic:
-        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, JOY_STICK_1_DOWN, B(1) /*B*/, B(9) /*X*/, B(5) /*+*/, B(4) /*-*/ },
+        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(1) /*B*/, JOY_STICK_1_DOWN, B(0) /*A*/, B(9) /*X*/, B(5) /*+*/, B(4) /*-*/ },
                  { JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, B(1) /*B*/, B(9) /*X*/, B(10) /*Y*/ } };
     case Layout::Nunchuk:
-        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, JOY_STICK_1_DOWN, B(1) /*B*/, B(7) /*Z*/, B(5) /*+*/, B(4) /*-*/ },
+        return { { JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(1) /*B*/, JOY_STICK_1_DOWN, B(0) /*A*/, B(7) /*Z*/, B(5) /*+*/, B(4) /*-*/ },
                  { JOY_STICK_1_UP, JOY_STICK_1_DOWN, JOY_STICK_1_LEFT, JOY_STICK_1_RIGHT, B(0) /*A*/, B(1) /*B*/, B(7) /*Z*/, B(8) /*C*/ } };
     case Layout::WiimoteSideways:
     default:
         // Wiimote held sideways, NES style (D-pad on the left, buttons 1 and 2 under the right thumb).
         // Turned 90 degrees, the D-pad's physical Up points screen-left, Right points up, Down points
         // screen-right and Left points down; SDL reports the *physical* direction in hat 0.
-        return { { JOY_HAT_UP /*screen left*/, JOY_HAT_DOWN /*screen right*/, B(3) /*2*/, JOY_HAT_LEFT /*screen down*/, B(2) /*1*/, B(0) /*A*/, B(5) /*+*/, B(4) /*-*/ },
+        return { { JOY_HAT_UP /*screen left*/, JOY_HAT_DOWN /*screen right*/, B(2) /*1*/, JOY_HAT_LEFT /*screen down*/, B(3) /*2*/, B(0) /*A*/, B(5) /*+*/, B(4) /*-*/ },
                  { JOY_HAT_RIGHT /*up*/, JOY_HAT_LEFT /*down*/, JOY_HAT_UP /*left*/, JOY_HAT_DOWN /*right*/, B(3) /*2*/, B(2) /*1*/, B(0) /*A*/, B(1) /*B*/ } };
     }
 }

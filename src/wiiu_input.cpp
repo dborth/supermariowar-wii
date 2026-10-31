@@ -58,7 +58,9 @@ constexpr int B(int n) { return JOY_BUTTON_START + n; }
 // can rebind to it in the controls menu.
 //
 // Game order: left, right, jump, down, turbo, powerup, start, cancel
-constexpr int kGameKeys[NUM_KEYS] = { JOY_HAT_LEFT, JOY_HAT_RIGHT, B(BTN_A), JOY_HAT_DOWN, B(BTN_B), B(BTN_X), B(BTN_PLUS), B(BTN_MINUS) };
+// Jump is the bottom face button, as in upstream SMW on a PC pad and in Super Mario World: that is B on a Nintendo
+// layout (A is the right-hand one), and 1 on a sideways Wii Remote. A is turbo.
+constexpr int kGameKeys[NUM_KEYS] = { JOY_HAT_LEFT, JOY_HAT_RIGHT, B(BTN_B), JOY_HAT_DOWN, B(BTN_A), B(BTN_X), B(BTN_PLUS), B(BTN_MINUS) };
 // Menu order: up, down, left, right, select, cancel, random, fast-scroll
 constexpr int kMenuKeys[NUM_KEYS] = { JOY_HAT_UP, JOY_HAT_DOWN, JOY_HAT_LEFT, JOY_HAT_RIGHT, B(BTN_A), B(BTN_B), B(BTN_X), B(BTN_Y) };
 
