@@ -48,7 +48,7 @@ int g_num_pads = 0;
 bool g_initial_scan_done = false;
 
 // Raw button numbers of the driver (WIIU_BTN_* in SDL_sysjoystick.c), named for the Wii U Pro Controller. Only the
-// ones used below. On a sideways Wii Remote the driver maps 2 -> A, 1 -> B, Wii Remote A -> X, Wii Remote B -> Y;
+// ones used below. On a sideways Wii Remote the driver maps 2 -> B, 1 -> A, Wii Remote A -> X, Wii Remote B -> Y;
 // a Nunchuk's C is X and Z is Y.
 enum { BTN_A = 0, BTN_B = 1, BTN_X = 2, BTN_Y = 3, BTN_MINUS = 8, BTN_PLUS = 9 };
 
@@ -59,7 +59,9 @@ constexpr int B(int n) { return JOY_BUTTON_START + n; }
 //
 // Game order: left, right, jump, down, turbo, powerup, start, cancel
 // Jump is the bottom face button, as in upstream SMW on a PC pad and in Super Mario World: that is B on a Nintendo
-// layout (A is the right-hand one), and 1 on a sideways Wii Remote. A is turbo.
+// layout (A is the right-hand one), and 2 on a sideways Wii Remote (the driver puts 2 on B, so it jumps there as on the
+// NES). A is turbo, which is 1 on a sideways Wii Remote. The price is in the menus: select is A and cancel is B, so a
+// sideways Wii Remote selects with 1 and cancels with 2.
 constexpr int kGameKeys[NUM_KEYS] = { JOY_HAT_LEFT, JOY_HAT_RIGHT, B(BTN_B), JOY_HAT_DOWN, B(BTN_A), B(BTN_X), B(BTN_PLUS), B(BTN_MINUS) };
 // Menu order: up, down, left, right, select, cancel, random, fast-scroll
 constexpr int kMenuKeys[NUM_KEYS] = { JOY_HAT_UP, JOY_HAT_DOWN, JOY_HAT_LEFT, JOY_HAT_RIGHT, B(BTN_A), B(BTN_B), B(BTN_X), B(BTN_Y) };

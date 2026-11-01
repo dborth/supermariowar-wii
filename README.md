@@ -7,7 +7,7 @@
 <p align="center">
   <b>Version 2.0 (unreleased)</b><br>
   A Wii and Wii U port of <a href="https://github.com/mmatyas/supermariowar">Super Mario War</a><br>
-  <a href="https://github.com/dborth/smw-wii">github.com/dborth/smw-wii</a> &middot; GPL licensed<br>
+  <a href="https://github.com/dborth/supermariowar-wii">github.com/dborth/supermariowar-wii</a> &middot; GPL licensed<br>
   Port author: Tantric (Daryl Borth)
 </p>
 
@@ -53,6 +53,20 @@ The game files are **bundled inside the `.wuhb`**. There is no separate `data` f
 
 ---
 
+## Download
+
+Every build of the `master` branch is published as a **Pre-release** on the
+[Releases page](https://github.com/dborth/supermariowar-wii/releases/tag/Pre-release), replacing the previous one:
+
+| File | For |
+|---|---|
+| `SuperMarioWar-Wii.zip` | Wii |
+| `SuperMarioWar-WiiU.zip` | Wii U |
+
+Each zip is laid out for the root of the SD card, as described below.
+
+---
+
 ## Installation
 
 ### Wii
@@ -69,7 +83,7 @@ When you are done, your SD card should look like this:
 ```
 sd:/
 ├── apps/
-│   └── smw/
+│   └── SuperMarioWar-Wii/
 │       ├── boot.dol
 │       ├── meta.xml
 │       └── icon.png
@@ -96,7 +110,7 @@ new ones fresh.
 
 | Mistake | What happens | Fix |
 |---|---|---|
-| Putting the `data` folder inside `sd:/apps/smw/` | The game never looks there and reports missing files | Move it to `sd:/smw/data/` |
+| Putting the `data` folder inside `sd:/apps/SuperMarioWar-Wii/` | The game never looks there and reports missing files | Move it to `sd:/smw/data/` |
 | Not copying `data` at all (only `apps/`) | Error screen: `Couldn't load sd:/smw/data/...` | Copy the `smw/data` folder to the SD card |
 | An extra folder level, such as `sd:/smw/data/data/gfx` | Same missing-file error | `gfx`, `sfx`, `maps`, `music`... must be directly inside `sd:/smw/data/` |
 | Only some of the files copied (copy interrupted, or a corrupt unzip) | Missing-file errors, or `Could not load any map music!` | Delete `sd:/smw/data` and copy it again |
@@ -174,12 +188,17 @@ after the title screen has appeared.
   player 1, the other Wiimotes and Pro Controllers are players 2 to 4.
 - If a controller disconnects (dead batteries, out of range), that player goes back to the keyboard setup. When the
   controller reconnects, it is bound to the first player without a controller.
+- **Wii:** every time a controller connects, it gets the default bindings for its type (see below), whatever it was
+  using before. Plugging a Classic Controller into a Wiimote, or swapping a Wiimote for a GameCube controller, always
+  gives a working layout.
 - Up to four players can play, even though more than four controllers can be connected.
 
 ### Default bindings
 
-These apply the first time you run the game, when no controls file exists yet. (They are decided by the controller
-type, not by which port it is in.)
+**Wii:** these are applied every time a controller connects, at startup or when you plug it in. (They are decided by
+the controller type, not by which port it is in.)
+
+**Wii U:** these apply the first time you run the game, while no controls file exists yet.
 
 **In a match**
 
@@ -187,8 +206,8 @@ type, not by which port it is in.)
 |---|---|---|---|---|
 | Move left / right | Control stick | D-pad | Nunchuk stick | Left stick |
 | Down | Control stick down | D-pad down | Nunchuk stick down | Left stick down |
-| Jump | A | 2 | A | A |
-| Turbo (run / fire) | B | 1 | B | B |
+| Jump | B | 2 | B | B |
+| Turbo (run / fire) | A | 1 | A | A |
 | Use power-up | X | A | Z | X |
 | Pause (start) | Start | + | + | + |
 | Cancel | Y | - | - | - |
@@ -207,6 +226,9 @@ Sideways Wiimote: press the D-pad in the direction you want to go on screen.
 The GameCube and Classic D-pads, and the Wiimote's own D-pad when a Nunchuk is attached, are not bound by default.
 You can bind them yourself, see below.
 
+Jump follows the controller you hold. Pads jump on B, as in Super Mario World. A sideways Wiimote follows the NES, as
+on the Virtual Console: 2 is the NES A button and jumps, 1 is the NES B button and is turbo.
+
 **Wii U: all controllers**
 
 On the Wii U every controller has the same default bindings, whatever it is (GamePad, Pro Controller, Wiimote held
@@ -217,12 +239,17 @@ rotated for you: press the D-pad in the direction you want to go on screen.
 | Action | In a match | In the menus |
 |---|---|---|
 | Move / Down (Up in menus) | D-pad | D-pad |
-| Jump / Select | A (Wiimote: 2) | A (Wiimote: 2) |
-| Turbo (run / fire) / Cancel | B (Wiimote: 1) | B (Wiimote: 1) |
+| Jump | B (Wiimote: 2) | |
+| Turbo (run / fire) | A (Wiimote: 1) | |
 | Use power-up / Random | X (Wiimote: A, Nunchuk: C) | X (Wiimote: A, Nunchuk: C) |
 | Pause (start) | + | |
 | Cancel (in a match) | - | |
+| Select | | A (Wiimote: 1) |
+| Cancel (in the menus) | | B (Wiimote: 2) |
 | Fast scroll | | Y (Wiimote: B, Nunchuk: Z) |
+
+A Wiimote held sideways jumps on 2 and runs on 1, as on a NES controller. Because the menus select with A and cancel
+with B, that Wiimote selects with 1 and cancels with 2: the opposite of the Wii version.
 
 The sticks are not bound by default, because a Wiimote has none. Bind them in the controls menu if you prefer them.
 
@@ -231,15 +258,27 @@ The sticks are not bound by default, because a Wiimote has none. Bind them in th
 Open **Controls** on the main menu to reach the **Player Controls Menu**, where you can rebind every button for every
 player.
 
-Your bindings are saved to `sd:/smw/controls.sdl2.bin` (on both consoles) when you start a match and when you exit from the menu.
-Once that file exists, **it is used as it is**: the defaults above are not applied again.
+**Wii:** a controller's bindings last until it is unplugged or the game is closed. Each time a controller connects it
+starts from its defaults again, so a custom layout for a controller is not remembered. Keyboard bindings are saved to
+`sd:/smw/controls.sdl2.bin` as usual.
+
+**Wii U:** your bindings are saved to `sd:/smw/controls.sdl2.bin` when you start a match and when you exit from the
+menu. Once that file exists, **it is used as it is**: the defaults above are not applied again.
 
 ### Resetting controls
 
-Delete `sd:/smw/controls.sdl2.bin`. On the next start, each controller gets the defaults for its type again.
+**Wii:** unplug the controller (or let it disconnect) and connect it again. It gets its defaults back. There is
+nothing to delete.
 
-Do this if the buttons are not what you expect, for example after switching to a different kind of controller, or
-after copying settings from another device or from Dolphin.
+**Wii U:** delete `sd:/smw/controls.sdl2.bin`. On the next start, each controller gets the defaults again.
+
+On the Wii U, do this if the buttons are not what you expect, for example after copying settings from another device
+or from Dolphin.
+
+### Quitting the game (Wii)
+
+Hold **HOME** for one second on a Wiimote or Classic Controller. This quits the game from anywhere, whatever the
+bindings are, so you can always get out. (GameCube controllers have no HOME button: quit from the main menu.)
 
 ---
 
@@ -253,7 +292,7 @@ inside `SuperMarioWar-WiiU.wuhb`.
 | `sd:/smw/data/` | Game assets (read only). **Wii only**; on the Wii U they are inside `SuperMarioWar-WiiU.wuhb` |
 | `sd:/smw/options.toml` | Game options, saved when you start a match and when you exit from the menu |
 | `sd:/smw/options.bin` | Old options format; read only if `options.toml` does not exist |
-| `sd:/smw/controls.sdl2.bin` | Controller bindings |
+| `sd:/smw/controls.sdl2.bin` | Controller bindings (Wii: keyboard only, controllers always start from their defaults) |
 | `sd:/smw/smw-log.txt` | Crash log. Only written if the game stops because of an error, and replaced each time that happens (see Troubleshooting) |
 
 To reset the game options, delete `options.toml` (and `options.bin`, if you have it).
@@ -312,14 +351,15 @@ log: tell us what you were doing, and include a photo of the screen.
 
 - **No controller connected yet.** Wake the Wiimote (press 1+2) and wait for its LED, or check that the GameCube
   controller is plugged in before the Wii was turned on.
-- **Old controls file.** If a controls file from another setup is in `sd:/smw/`, your buttons may not match the
+- **Old controls file (Wii U).** If a controls file from another setup is in `sd:/smw/`, your buttons may not match the
   saved bindings. Delete `sd:/smw/controls.sdl2.bin` (see [Resetting controls](#resetting-controls)).
 - On the title screen, the Select, Cancel and Random buttons from the tables above all continue.
   That is A, B or X on GameCube and Classic, A, B or Z on Nunchuk, and 2, 1 or A on a sideways Wiimote.
 
 ### Buttons are not what I expect
 
-Delete `sd:/smw/controls.sdl2.bin`. See [Resetting controls](#resetting-controls).
+**Wii:** unplug the controller and connect it again to get its defaults back. **Wii U:** delete
+`sd:/smw/controls.sdl2.bin`. See [Resetting controls](#resetting-controls).
 
 ### Netplay
 
@@ -338,7 +378,7 @@ Netplay has been compiled in on both consoles, but note that it's totally untest
 
 ## Reporting issues
 
-Please report problems at <https://github.com/dborth/smw-wii/issues> and include:
+Please report problems at <https://github.com/dborth/supermariowar-wii/issues> and include:
 
 - What you were doing and what you expected
 - The text on the error screen, if there was one
@@ -357,16 +397,20 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
 * Fresh port of Super Mario War from the continued project at
   [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar). This requires you to replace ALL old files.
 * Uses SDL3 (the libogc2 fork at [dborth/SDL, branch `ogc-port`](https://github.com/dborth/SDL/tree/ogc-port)).
-* Game files are read from `sd:/smw/data`, and settings are saved in `sd:/smw`. The game runs from `sd:/apps/smw`.
+* Game files are read from `sd:/smw/data`, and settings are saved in `sd:/smw`. The game runs from `sd:/apps/SuperMarioWar-Wii`.
 * Controllers are detected as they connect (also after the title screen) and bound to players automatically:
-  GameCube controllers, sideways Wiimotes, Wiimote + Nunchuk, Wiimote + Classic Controller. Bindings can be changed in the
-  Controls menu and are saved to `controls.sdl2.bin`.
+  GameCube controllers, sideways Wiimotes, Wiimote + Nunchuk, Wiimote + Classic Controller. Jump is on B and turbo on A
+  (sideways Wiimote, as on the NES: jump on 2, turbo on 1). Bindings can be changed in the Controls menu. On the Wii every controller starts from the
+  defaults for its type each time it connects, so changing controllers never leaves a broken layout. Hold HOME for one
+  second on a Wiimote or Classic Controller to quit.
 * 16-bit (RGB565) video, for full speed on the Wii.
 * Netplay over the Wii's network connection (untested).
 * SD card only.
+* Every build of `master` is published as a Pre-release: `SuperMarioWar-Wii.zip` and `SuperMarioWar-WiiU.zip`.
 * **Wii U version:** new, built on the Wii U SDL3 fork ([dborth/SDL, branch `wut-port`](https://github.com/dborth/SDL/tree/wut-port)).
   Distributed as a single `SuperMarioWar-WiiU.wuhb` with all game files bundled; settings are saved in `sd:/smw` on the SD card.
-  Controllers: GamePad, Pro Controller, sideways Wiimote, Wiimote + Nunchuk, Wiimote + Classic Controller.
+  Controllers: GamePad, Pro Controller, sideways Wiimote, Wiimote + Nunchuk, Wiimote + Classic Controller. Bindings are
+  saved to `controls.sdl2.bin`.
   Netplay over the Wii U's network connection (untested).
 
 ### [1.4 - August 11, 2010]
