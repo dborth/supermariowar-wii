@@ -1,5 +1,4 @@
 // Controller support for the Wii port, without modifying upstream (hooked in with -Wl,--wrap, see CMakeLists.txt).
-// SMW_WII_ROOT comes from CMakeLists.txt.
 //
 // Why this is needed (all in upstream's input code, nothing wrong with SDL here):
 //  * init_joysticks() runs once at startup, ignores the instance IDs SDL3 returns and calls
@@ -9,9 +8,18 @@
 //    waits for a USB keyboard that isn't there.
 //
 // What this does: watches the events the game reads (SDL_PollEvent / SDL_WaitEvent). When a joystick is
-// ADDED it opens it, picks defaults for that controller type, and binds it to the first player that is
-// still on the keyboard. On REMOVED it closes it and gives the player back to the keyboard.
-// Players can still rebind everything in SMW's own controls menu.
+// ADDED it opens it, installs the default bindings for that controller type, and binds it to the first
+// player that is still on the keyboard. On REMOVED it closes it and gives the player back to the keyboard.
+//
+// Joystick bindings are never taken from controls.sdl2.bin: the file stores one set of buttons per player,
+// not per controller type, so a Classic Controller's bindings (stick, X = 9, ...) would be applied to a
+// sideways Wiimote (hat, 1 and 2) and the other way round, depending on what was plugged in at the time it
+// was saved. Every connect starts from that controller's defaults, so unplugging and plugging in another
+// controller (or starting with a different one) always gives a working layout. Players can still rebind
+// in SMW's own controls menu; that lasts until the controller is unplugged. Keyboard bindings are untouched.
+//
+// Exit: holding HOME on a Wiimote or Classic Controller for a second quits the game, whatever the bindings
+// are, so a bad layout can never leave the game impossible to leave.
 //
 // Device ids: upstream's input code is inconsistent about what a "device" is. The controls menu (and the
 // saved controls file, and "iDevice >= joystickcount") treat it as an INDEX 0..joystickcount-1, while
@@ -30,7 +38,6 @@
 #include "GameValues.h"   // CGameValues, CInputPlayerControl, JOY_* constants (upstream src/common)
 
 #include <cstring>
-#include <sys/stat.h>
 
 extern CGameValues game_values;       // upstream, common/global.cpp
 extern SDL_Joystick** joysticks;      // upstream, common/global.cpp (used by the controls menu)
@@ -46,6 +53,8 @@ struct Pad {
     SDL_JoystickID id = 0;
     SDL_Joystick* js = nullptr;
     int player = -1;   // 0..3, or -1 if all players were already taken
+    Layout layout = Layout::WiimoteSideways;
+    Uint64 home_since = 0;   // SDL_GetTicks() when HOME went down, 0 while it is up
 };
 
 Pad g_pads[kMaxPads];
@@ -53,6 +62,9 @@ int g_num_pads = 0;
 bool g_initial_scan_done = false;
 
 constexpr int B(int n) { return JOY_BUTTON_START + n; }
+
+constexpr int kHomeButton = 6;          // HOME on a Wiimote and on a Classic Controller (GameCube pads have none)
+constexpr Uint64 kHomeHoldMs = 1000;    // hold it this long to quit
 
 struct Keys { int game[NUM_KEYS]; int menu[NUM_KEYS]; };
 
@@ -98,12 +110,6 @@ Layout classify(const char* name)
     if (std::strstr(name, "Classic")) return Layout::Classic;
     if (std::strstr(name, "Nunchuk")) return Layout::Nunchuk;
     return Layout::WiimoteSideways;
-}
-
-bool controls_file_exists()
-{
-    struct stat st;
-    return stat(SMW_WII_ROOT "controls.sdl2.bin", &st) == 0;
 }
 
 // The controls menu and the "saved device is still connected?" check both read these globals.
@@ -155,6 +161,7 @@ void on_joystick_added(SDL_JoystickID id)
     pad = Pad{};                        // clear whatever a previously removed pad left in this slot
     pad.id = id;
     pad.js = js;
+    pad.layout = layout;
     pad.player = first_free_player();   // decided before this pad is counted, so it can't "take" its own slot
     ++g_num_pads;
 
@@ -162,12 +169,11 @@ void on_joystick_added(SDL_JoystickID id)
         CInputPlayerControl& cfg = game_values.inputConfiguration[pad.player][1];   // [1] = joystick config
         cfg.iDevice = static_cast<short>(idx);
 
-        if (!controls_file_exists()) {   // first run: install our defaults; otherwise keep what the player saved
-            const Keys k = keys_for(layout);
-            for (int i = 0; i < NUM_KEYS; ++i) {
-                cfg.inputGameControls[0].keys[i] = k.game[i];
-                cfg.inputGameControls[1].keys[i] = k.menu[i];
-            }
+        // Always this controller's defaults, never what controls.sdl2.bin holds (see the header comment)
+        const Keys k = keys_for(layout);
+        for (int i = 0; i < NUM_KEYS; ++i) {
+            cfg.inputGameControls[0].keys[i] = k.game[i];
+            cfg.inputGameControls[1].keys[i] = k.menu[i];
         }
         game_values.playerInput.inputControls[pad.player] = &cfg;
     }
@@ -183,8 +189,17 @@ void on_joystick_removed(SDL_JoystickID id)
     const int player = g_pads[i].player;
     if (g_pads[i].js) SDL_CloseJoystick(g_pads[i].js);
 
-    if (player >= 0)   // back to the keyboard so the slot can be claimed again
+    if (player >= 0) {   // back to the keyboard so the slot can be claimed again
         game_values.playerInput.inputControls[player] = &game_values.inputConfiguration[player][0];
+
+        // ...and the pad's bindings go back to defaults, so a rebinding or a saved layout never outlives the controller
+        const Keys k = keys_for(g_pads[i].layout);
+        CInputPlayerControl& cfg = game_values.inputConfiguration[player][1];
+        for (int n = 0; n < NUM_KEYS; ++n) {
+            cfg.inputGameControls[0].keys[n] = k.game[n];
+            cfg.inputGameControls[1].keys[n] = k.menu[n];
+        }
+    }
 
     for (int j = i; j + 1 < g_num_pads; ++j) g_pads[j] = g_pads[j + 1];
     --g_num_pads;
@@ -226,8 +241,31 @@ void remap_which(SDL_Event& e)
 
 void observe(const SDL_Event& e)
 {
-    if (e.type == SDL_EVENT_JOYSTICK_ADDED) on_joystick_added(e.jdevice.which);
-    else if (e.type == SDL_EVENT_JOYSTICK_REMOVED) on_joystick_removed(e.jdevice.which);
+    if (e.type == SDL_EVENT_JOYSTICK_ADDED) {
+        on_joystick_added(e.jdevice.which);
+    } else if (e.type == SDL_EVENT_JOYSTICK_REMOVED) {
+        on_joystick_removed(e.jdevice.which);
+    } else if ((e.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN || e.type == SDL_EVENT_JOYSTICK_BUTTON_UP)
+               && e.jbutton.button == kHomeButton) {
+        const Uint32 i = e.jbutton.which;   // already the pad index: remap_which() ran first
+        if (i < static_cast<Uint32>(g_num_pads) && g_pads[i].layout != Layout::GameCube)
+            g_pads[i].home_since = (e.type == SDL_EVENT_JOYSTICK_BUTTON_DOWN) ? SDL_GetTicks() : 0;
+    }
+}
+
+// HOME held long enough: ask the game to quit, exactly as closing the window would.
+void check_home_hold()
+{
+    const Uint64 now = SDL_GetTicks();
+    for (int i = 0; i < g_num_pads; ++i) {
+        if (g_pads[i].home_since && now - g_pads[i].home_since >= kHomeHoldMs) {
+            g_pads[i].home_since = 0;
+            SDL_Event quit;
+            SDL_zero(quit);
+            quit.type = SDL_EVENT_QUIT;
+            SDL_PushEvent(&quit);
+        }
+    }
 }
 
 } // namespace
@@ -238,6 +276,7 @@ extern "C" bool __real_SDL_WaitEvent(SDL_Event* event);
 extern "C" bool __wrap_SDL_PollEvent(SDL_Event* event)
 {
     initial_scan();
+    check_home_hold();
     const bool got = __real_SDL_PollEvent(event);
     if (got && event) { remap_which(*event); observe(*event); }
     return got;
@@ -246,6 +285,7 @@ extern "C" bool __wrap_SDL_PollEvent(SDL_Event* event)
 extern "C" bool __wrap_SDL_WaitEvent(SDL_Event* event)
 {
     initial_scan();
+    check_home_hold();
     const bool got = __real_SDL_WaitEvent(event);
     if (got && event) { remap_which(*event); observe(*event); }
     return got;
