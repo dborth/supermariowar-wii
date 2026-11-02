@@ -135,6 +135,9 @@ endif()
 # Content and SD card locations.
 smw_wiiu_glue(wiiu_paths src/wiiu_paths.cpp)
 
+# GamePad mirror: the window is shown on the TV and the GamePad (src/wiiu_video.cpp). No upstream headers.
+smw_wiiu_glue(wiiu_video src/wiiu_video.cpp)
+
 # Controller hotplug + default bindings. Needs upstream's headers (GameValues.h, input.h).
 smw_wiiu_glue(wiiu_input src/wiiu_input.cpp)
 target_compile_features(wiiu_input PRIVATE cxx_std_20)
@@ -155,6 +158,8 @@ set(SMW_WRAPPED_SYMBOLS
     # content and SD card locations: src/wiiu_paths.cpp
     SDL_GetBasePath
     SDL_GetPrefPath
+    # GamePad mirror: src/wiiu_video.cpp
+    SDL_CreateWindow
     # controllers: src/wiiu_input.cpp
     SDL_PollEvent
     SDL_WaitEvent
