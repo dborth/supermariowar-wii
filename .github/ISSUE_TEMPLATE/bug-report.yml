@@ -1,0 +1,205 @@
+name: Bug report
+description: Report a bug in Super Mario War Wii / Wii U. Detailed reports get read, vague ones get closed.
+title: "[Issue]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Before you start
+
+        This project is a **port**. It runs on two consoles (Wii and Wii U) and uses two SDL3 forks. This form is for bugs in the port: crashes, controllers, video, audio, saving, and anything else that is specific to the Wii or Wii U builds.
+
+        **Bugs in the game itself belong upstream.** If it also happens in the Windows, Linux or macOS version (wrong game rules, a broken map, a mode that misbehaves, a power-up bug, bad AI), report it at [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar/issues) instead. Reports about the game itself will be closed here.
+
+        Also closed: questions and setup help (see the [README](https://github.com/dborth/supermariowar-wii#readme)), and feature requests.
+
+        - Only reports against the **latest Pre-release build** are triaged.
+        - **Wii U:** run the **latest Aroma**.
+        - One bug per issue, please.
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-flight checklist
+      options:
+        - label: I downloaded the **latest Pre-release build** and the bug still happens.
+          required: true
+        - label: I searched open and closed issues and this has not been reported already.
+          required: true
+        - label: This is a bug in the Wii / Wii U port, not a bug in the game itself, a question, or a feature request.
+          required: true
+
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where are you running it?
+      description: Pick the exact option. vWii and native Wii U are different builds. If you are on real hardware, say so, because emulators can behave differently.
+      options:
+        - Wii
+        - Wii U - vWii (Wii build)
+        - Wii U - native (Aroma, .wuhb)
+      multiple: false
+    validations:
+      required: true
+
+  - type: input
+    id: build
+    attributes:
+      label: Build date
+      description: The Pre-release is replaced in place, so give the date you downloaded it (or the commit hash / Actions run), and which zip, `SuperMarioWar-Wii.zip` or `SuperMarioWar-WiiU.zip`.
+      placeholder: "SuperMarioWar-WiiU.zip, downloaded 2026-11-01"
+    validations:
+      required: true
+
+  - type: textarea
+    id: console-details
+    attributes:
+      label: Console and environment details
+      description: Fill in the lines that apply and delete the rest.
+      value: |
+        Console region (NTSC-U, NTSC-J, PAL):
+        System menu / firmware version:
+        Wii / vWii - IOS version, cIOS or patches installed:
+        Wii U native - Aroma version, and any plugins installed (Bloopair, etc.):
+    validations:
+      required: true
+
+  - type: dropdown
+    id: controllers
+    attributes:
+      label: Controllers in use
+      multiple: true
+      options:
+        - GameCube controller
+        - Wiimote (sideways)
+        - Wiimote + Nunchuk
+        - Wiimote + Classic Controller
+        - Wii U GamePad
+        - Wii U Pro Controller
+        - Third-party Bluetooth controller
+        - Not controller related
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: What kind of problem is it?
+      options:
+        - Crash, freeze, or error screen at startup
+        - Crash or freeze in the menus
+        - Crash or freeze during a match
+        - Quitting / returning to the Homebrew Channel or Wii U menu (HOME button)
+        - Controller / input
+        - Video / graphics (glitches, wrong colours, scaling, black screen, TV or GamePad)
+        - Audio (crackling, missing, wrong speed)
+        - Saving / loading (options, controls, SD card)
+        - Netplay (untested)
+        - Performance / slowdown
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: describe-bug
+    attributes:
+      label: Describe the bug
+      description: What happens, in as much detail as you can. Include the **exact text of any error message**. "It crashes" alone can't be investigated.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Numbered steps from launching the game to the problem, including the menu, game mode and map if relevant.
+      placeholder: |
+        1. Launch the game from ...
+        2. Choose ...
+        3. See the problem
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected behavior
+      description: What you expected to happen instead.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does it happen?
+      options:
+        - Every time, following the same steps
+        - Often, but not every time
+        - Occasionally / hard to reproduce
+        - It happened once
+    validations:
+      required: true
+
+  - type: dropdown
+    id: upstream
+    attributes:
+      label: Does it also happen in the Windows, Linux or macOS version?
+      description: If you can try the same thing in the PC version of Super Mario War, do. If it happens there too, it is a game bug and belongs [upstream](https://github.com/mmatyas/supermariowar/issues).
+      options:
+        - No, it works correctly there
+        - I haven't tested
+        - Not applicable (crash, controller, saving, or other port-specific problem)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: other-build
+    attributes:
+      label: Does it happen on the other console's build (Wii vs Wii U)?
+      options:
+        - Yes, on both
+        - No, only on the one I reported
+        - I can only test one
+    validations:
+      required: true
+
+  - type: dropdown
+    id: settings-reset
+    attributes:
+      label: Have you tried with default settings?
+      description: |
+        Delete `sd:/smw/options.toml` (and `options.bin` if you have it). For a controller problem on **Wii U**, also delete `sd:/smw/controls.sdl2.bin`. Then retry.
+      options:
+        - Yes, and the bug still happens
+        - Yes, and the bug went away (say what you think caused it below)
+        - No, I haven't tried
+    validations:
+      required: true
+
+  - type: textarea
+    id: log
+    attributes:
+      label: smw-log.txt and crash information
+      description: |
+        If the game stopped with an error, paste `sd:/smw/smw-log.txt` here (it is only written on an error, and replaced each time). On the Wii, the error screen is worth a photo as well.
+        If the game froze or showed a console crash screen, no log is written: include a photo of the screen and say what you were doing.
+      render: shell
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots, photos or video
+      description: Drag and drop images or a short video here. A phone photo is fine for error screens.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Anything else?
+      description: Workarounds you found, when it last worked, or anything else that might help.
+    validations:
+      required: false

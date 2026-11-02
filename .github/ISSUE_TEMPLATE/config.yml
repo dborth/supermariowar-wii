@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Bug in the game itself (rules, maps, modes, power-ups, AI)
+    url: https://github.com/mmatyas/supermariowar/issues
+    about: This tracker is for bugs in the Wii / Wii U port. If it also happens in the Windows, Linux or macOS version, report it upstream.
+  - name: Setup help and "how do I..."
+    url: https://github.com/dborth/supermariowar-wii#troubleshooting
+    about: This tracker is for bugs only. The README covers installation, controllers, resetting settings and error messages.
