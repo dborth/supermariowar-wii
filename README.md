@@ -151,7 +151,7 @@ If you are upgrading, replace `SuperMarioWar-WiiU.wuhb` with the new one. Your s
 ## Starting the game
 
 1. **Wii:** start the Homebrew Channel and choose **Super Mario War Wii**.
-   **Wii U:** start **Super Mario War Wii U** from the Wii U menu (with Aroma, it is listed with your other homebrew).
+   **Wii U:** start **Super Mario War Wii U** from the Wii U menu
 2. Wait for the title screen (**Press Any Key To Continue**).
 3. Press a button on a connected controller (see [Controllers](#controllers)).
 
