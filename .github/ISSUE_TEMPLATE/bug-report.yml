@@ -61,7 +61,7 @@ body:
         Console region (NTSC-U, NTSC-J, PAL):
         System menu / firmware version:
         Wii / vWii - IOS version, cIOS or patches installed:
-        Wii U native - Aroma version, and any plugins installed (Bloopair, etc.):
+        Wii U native - Aroma version, and any plugins installed:
     validations:
       required: true
 
@@ -70,14 +70,15 @@ body:
     attributes:
       label: Controllers in use
       multiple: true
+      description: Some controllers only exist on one console. GameCube controllers are Wii only. The GamePad and Pro Controller are Wii U only.
       options:
-        - GameCube controller
-        - Wiimote (sideways)
+        - GameCube controller (Wii)
+        - Wiimote, held sideways
         - Wiimote + Nunchuk
         - Wiimote + Classic Controller
-        - Wii U GamePad
-        - Wii U Pro Controller
-        - Third-party Bluetooth controller
+        - Wii U GamePad (Wii U)
+        - Wii U Pro Controller (Wii U)
+        - Other
         - Not controller related
     validations:
       required: true
@@ -90,7 +91,7 @@ body:
         - Crash, freeze, or error screen at startup
         - Crash or freeze in the menus
         - Crash or freeze during a match
-        - Quitting / returning to the Homebrew Channel or Wii U menu (HOME button)
+        - Quitting (HOME button, hold HOME on Wii, or Close in the Wii U HOME menu)
         - Controller / input
         - Video / graphics (glitches, wrong colours, scaling, black screen, TV or GamePad)
         - Audio (crackling, missing, wrong speed)
@@ -169,7 +170,8 @@ body:
     attributes:
       label: Have you tried with default settings?
       description: |
-        Delete `sd:/smw/options.toml` (and `options.bin` if you have it). For a controller problem on **Wii U**, also delete `sd:/smw/controls.sdl2.bin`. Then retry.
+        Delete `sd:/smw/options.toml` (and `options.bin` if you have it), then retry.
+        For a controller problem: on **Wii U**, also delete `sd:/smw/controls.sdl2.bin`. On **Wii**, unplug the controller (or let it disconnect) and connect it again, which restores its defaults.
       options:
         - Yes, and the bug still happens
         - Yes, and the bug went away (say what you think caused it below)
@@ -182,8 +184,10 @@ body:
     attributes:
       label: smw-log.txt and crash information
       description: |
-        If the game stopped with an error, paste `sd:/smw/smw-log.txt` here (it is only written on an error, and replaced each time). On the Wii, the error screen is worth a photo as well.
-        If the game froze or showed a console crash screen, no log is written: include a photo of the screen and say what you were doing.
+        If the game stopped with an error, paste `sd:/smw/smw-log.txt` here. It is only written on an error, and replaced each time.
+        **Wii:** the game also shows a screen titled "Super Mario War (Wii) stopped" with the reason. Please include a photo of it.
+        **Wii U:** there is no error screen, so the log is the only record.
+        If the game froze or showed a CPU exception / console crash screen, no log is written: include a photo of the screen and say what you were doing.
       render: shell
     validations:
       required: false

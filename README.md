@@ -257,9 +257,8 @@ The sticks are not bound by default, because a Wiimote has none. Bind them in th
 Open **Controls** on the main menu to reach the **Player Controls Menu**, where you can rebind every button for every
 player.
 
-**Wii:** a controller's bindings last until it is unplugged or the game is closed. Each time a controller connects it
-starts from its defaults again, so a custom layout for a controller is not remembered. Keyboard bindings are saved to
-`sd:/smw/controls.sdl2.bin` as usual.
+**Wii:** nothing is saved. A controller's bindings last until it is unplugged or the game is closed. Each time a
+controller connects it starts from its defaults again, so a custom layout for a controller is not remembered.
 
 **Wii U:** your bindings are saved to `sd:/smw/controls.sdl2.bin` when you start a match and when you exit from the
 menu. Once that file exists, **it is used as it is**: the defaults above are not applied again.
@@ -283,20 +282,24 @@ bindings are, so you can always get out. (GameCube controllers have no HOME butt
 
 ## Files and settings
 
-On the Wii U, `sd:/smw/` is a folder on the SD card, just like on the Wii. The game assets are not there: they are
-inside `SuperMarioWar-WiiU.wuhb`.
+**Settings are saved on the Wii U only.** The Wii version does not save options or controller bindings: every
+controller starts from its defaults each time it connects.
+
+On the Wii U, `sd:/smw/` is a folder on the SD card for your settings. The game assets are not there: they are bundled
+inside `SuperMarioWar-WiiU.wuhb`. On the Wii, `sd:/smw/` holds the game assets, and the crash log if the game stops
+because of an error.
 
 | Path | What it is |
 |---|---|
 | `sd:/smw/data/` | Game assets (read only). **Wii only**; on the Wii U they are inside `SuperMarioWar-WiiU.wuhb` |
-| `sd:/smw/options.toml` | Game options, saved when you start a match and when you exit from the menu |
-| `sd:/smw/options.bin` | Old options format; read only if `options.toml` does not exist |
-| `sd:/smw/controls.sdl2.bin` | Controller bindings (Wii: keyboard only, controllers always start from their defaults) |
-| `sd:/smw/smw-log.txt` | Crash log. Only written if the game stops because of an error, and replaced each time that happens (see Troubleshooting) |
+| `sd:/smw/options.toml` | **Wii U only.** Game options, saved when you start a match and when you exit from the menu |
+| `sd:/smw/options.bin` | **Wii U only.** Old options format; read only if `options.toml` does not exist |
+| `sd:/smw/controls.sdl2.bin` | **Wii U only.** Controller bindings |
+| `sd:/smw/smw-log.txt` | Crash log (Wii and Wii U). Only written if the game stops because of an error, and replaced each time that happens (see Troubleshooting) |
 
-To reset the game options, delete `options.toml` (and `options.bin`, if you have it).
+**Wii U:** to reset the game options, delete `options.toml` (and `options.bin`, if you have it).
 The `sd:/smw` folder is created automatically if it does not exist, even if you forgot to copy `data` into it (Wii).
-Settings cannot be saved if the SD card's write-protect switch is on.
+**Wii U:** settings cannot be saved if the SD card's write-protect switch is on.
 
 ---
 
@@ -395,22 +398,21 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
 
 * Fresh port of Super Mario War from the continued project at
   [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar). This requires you to replace ALL old files.
-* Uses SDL3 (the libogc2 fork at [dborth/SDL, branch `ogc-port`](https://github.com/dborth/SDL/tree/ogc-port)).
-* Game files are read from `sd:/smw/data`, and settings are saved in `sd:/smw`. The game runs from `sd:/apps/SuperMarioWar-Wii`.
-* Controllers are detected as they connect (also after the title screen) and bound to players automatically:
-  GameCube controllers, sideways Wiimotes, Wiimote + Nunchuk, Wiimote + Classic Controller. Jump is on B and turbo on A
-  (sideways Wiimote, as on the NES: jump on 2, turbo on 1). Bindings can be changed in the Controls menu. On the Wii every controller starts from the
-  defaults for its type each time it connects, so changing controllers never leaves a broken layout. Hold HOME for one
-  second on a Wiimote or Classic Controller to quit.
-* 16-bit (RGB565) video, for full speed on the Wii.
-* Netplay over the Wii's network connection (untested).
-* SD card only.
-* Every build of `master` is published as a Pre-release: `SuperMarioWar-Wii.zip` and `SuperMarioWar-WiiU.zip`.
-* **Wii U version:** new, built on the Wii U SDL3 fork ([dborth/SDL, branch `wut-port`](https://github.com/dborth/SDL/tree/wut-port)).
-  Distributed as a single `SuperMarioWar-WiiU.wuhb` with all game files bundled; settings are saved in `sd:/smw` on the SD card.
-  Controllers: GamePad, Pro Controller, sideways Wiimote, Wiimote + Nunchuk, Wiimote + Classic Controller. Bindings are
-  saved to `controls.sdl2.bin`.
-  Netplay over the Wii U's network connection (untested).
+* Built on SDL3, using two SDL forks: the libogc2 fork for the Wii ([dborth/SDL, branch `ogc-port`](https://github.com/dborth/SDL/tree/ogc-port))
+  and the wut fork for the Wii U ([dborth/SDL, branch `wut-port`](https://github.com/dborth/SDL/tree/wut-port)).
+* Controllers are detected as they connect (also after the title screen) and bound to players automatically. Jump is on B
+  and turbo on A (sideways Wiimote, as on the NES: jump on 2, turbo on 1). Bindings can be changed in the Controls menu.
+* Netplay over the console's network connection (untested).
+* **Wii version:**
+  * Game files are read from `sd:/smw/data`. The game runs from `sd:/apps/SuperMarioWar-Wii`. SD card only.
+  * Controllers: GameCube controllers, sideways Wiimotes, Wiimote + Nunchuk, Wiimote + Classic Controller.
+  * Settings are not saved. Every controller starts from the defaults for its type each time it connects, so changing
+    controllers never leaves a broken layout.
+  * Hold HOME for one second on a Wiimote or Classic Controller to quit.
+* **Wii U version:** new.
+  * Distributed as a single `SuperMarioWar-WiiU.wuhb` with all the game files bundled. There is no `data` folder to copy.
+  * Controllers: GamePad, Pro Controller, sideways Wiimote, Wiimote + Nunchuk, Wiimote + Classic Controller.
+  * Options and controller bindings are saved in `sd:/smw` on the SD card (`options.toml` and `controls.sdl2.bin`).
 
 ### [1.4 - August 11, 2010]
 
