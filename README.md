@@ -5,7 +5,6 @@
 <h1 align="center">Super Mario War Wii / Wii U</h1>
 
 <p align="center">
-  <b>Version 2.0 (unreleased)</b><br>
   A Wii and Wii U port of <a href="https://github.com/mmatyas/supermariowar">Super Mario War</a><br>
   <a href="https://github.com/dborth/supermariowar-wii">github.com/dborth/supermariowar-wii</a> &middot; GPL licensed<br>
   Port author: Tantric (Daryl Borth)
@@ -392,7 +391,7 @@ Problems that also occur in the Windows, Linux or macOS versions of the game bel
 
 ## Changelog
 
-### [2.0 - Unreleased]
+### [2.0 - November 1, 2026]
 
 * Fresh port of Super Mario War from the continued project at
   [mmatyas/supermariowar](https://github.com/mmatyas/supermariowar). This requires you to replace ALL old files.
